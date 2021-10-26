@@ -5,6 +5,10 @@ long duration;
 int distance;
 int minDistance = 40;
 int backwardDistance = 80;
+int stopTime = 5000;
+
+int backwardMode = 0;
+int midConnect = "3";
 
 // motor
 int S_A = 10;  //speed motor a
@@ -52,43 +56,50 @@ void loop() {
 
 void runLineSensor(){
 	if (left_sensor_state == 0) && (mid_sensor_state == 1) && (right_sensor_state == 0)){
-		if (reverseMode == 0){
-			forward();
-		} else {
-			backward()
-		}
+		forward();
 	}
 	if (left_sensor_state == 1) && (mid_sensor_state == 1) && (right_sensor_state == 0)){
-		if (reverseMode == 0){
-			turnLeft();
-		} else {
-			bcwturnLeft();
-		}
+		turnLeft();
 	}
 	if (left_sensor_state == 1) && (mid_sensor_state == 0) && (right_sensor_state == 0)){
-		if (reverseMode == 0){
-			turnLeft();
-		} else {
-			bcwturnLeft();
-		}
+		turnLeft();
 	}
 	if (left_sensor_state == 0) && (mid_sensor_state == 1) && (right_sensor_state == 1)){
-		if (reverseMode == 0){
-			turnRight();
-		} else {
-			bcwturnRight();
-		}
+		turnRight();
 	}
 	if (left_sensor_state == 0) && (mid_sensor_state == 0) && (right_sensor_state == 1)){
-		if (reverseMode == 0){
-			turnRight();
-		} else {
-			bcwturnRight();
-		}
+		turnRight();
 	}
 
 	if (left_sensor_state == 1) && (mid_sensor_state == 1) && (right_sensor_state == 1)){
-		Stop();
+		// Stop();
+		if (midConnect == "3"){
+			if (backwardMode == 1){
+				turnRight();
+			} else {
+				turnLeft();
+			}
+			delay(1000);
+			forward();
+			delay(1000);
+		}
+		if (midConnect == "2"){
+			forward();
+			delay(1000);
+			forward();
+			delay(1000);
+		}
+		if (midConnect == "1"){
+			if (backwardMode == 1){
+				turnLeft();
+			} else {
+				turnRight();
+			}
+			delay(1000);
+			forward();
+			delay(1000);
+		}
+		//configure mid connect
 	}
 }
 
@@ -117,12 +128,6 @@ void turnRight(){
 		digitalWrite(M_B2, 0);
 	}
 }
-void bcwturnRight(){
-	digitalWrite(M_A1, 0);
-	digitalWrite(M_A2, 0);
-	digitalWrite(M_B1, 0);
-	digitalWrite(M_B2, 1);
-}
 
 void turnLeft(){
 	if (distance > minDistance) {
@@ -131,12 +136,6 @@ void turnLeft(){
 		digitalWrite(M_B1, 0);
 		digitalWrite(M_B2, 0);
 	}
-}
-void bcwturnLeft(){
-	digitalWrite(M_A1, 1);
-	digitalWrite(M_A2, 0);
-	digitalWrite(M_B1, 0);
-	digitalWrite(M_B2, 0);
 }
 
 void Stop(){
@@ -156,35 +155,24 @@ void readUltrasonicSensor() {
   distance = duration * 0.034 / 2;
 	if (distance < minDistance) {
 		Stop();
+		delay(stopTime);
+		turnAround();
+		delay(2000);
 	}
+	turnAroundTillLine();
 }
 
 
-
-// void getaround(){
-// 	x = millis();
-// 	for (x, x<)
-// 	turnAround();
-// 	delay(1000);
-// }
-
+void turnAroundTillLine(){
+	backwardMode = 1;
+	if (left_sensor_state == 0) && (mid_sensor_state == 0) && (right_sensor_state == 0)){
+		turnAround();
+	}
+}
 
 void turnAround(){
 	digitalWrite(M_A1, 1);
 	digitalWrite(M_A2, 0);
 	digitalWrite(M_B1, 1);
 	digitalWrite(M_B2, 0);
-	// int backwardDone = 0;
-	// if (distance < backwardDistance) {
-	// 	backwardDone = 0;
-	// 	backward();
-	// } else {
-	// 	backwardDone = 1;
-	// }
-
-	// if (backwardDone == 1){
-	// 	turnRight();
-	// 	delay(1000)
-	// }
-
 }
